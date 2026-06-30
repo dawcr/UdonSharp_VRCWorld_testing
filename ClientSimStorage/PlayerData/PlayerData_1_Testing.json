@@ -22,5 +22,13 @@
       "type": "Int",
       "value": 38
     }
+  },
+  "WorldTiles": {
+    "LastUpdated": "2026-06-30T19:16:01.9237804+02:00",
+    "Key": "WorldTiles",
+    "Value": {
+      "type": "Bytes",
+      "value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=="
+    }
   }
 }

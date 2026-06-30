@@ -4,47 +4,86 @@ using VRC.SDK3.Persistence;
 using VRC.SDKBase;
 using VRC.Udon;
 
+[UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
 public class TileManager : UdonSharpBehaviour
 {
     [SerializeField] private GameObject worldFloor;
     [SerializeField] private GameObject baseTilePrefab;
+    [SerializeField] private GameObject grassyWoodenBenchPrefab;
 
-    private TileType[] _worldTiles;
+    [UdonSynced] private byte[] _worldTiles;
+    private GameObject[] _worldTilesGameObjects;
+    private byte[] _localTiles;
     private const string WorldTilesStringName = "WorldTiles";
     private int _maxXTiles;
     private int _maxZTiles;
+    private int _maxTiles;
     private float _tileXSize;
     private float _tileZSize;
     private float _startingXLocation;
     private float _startingZLocation;
     private float _worldScaleX;
     private float _worldScaleZ;
+    private bool _restoreComplete;
     
     public override void OnPlayerRestored(VRCPlayerApi player)
     {
-        if (!Networking.IsMaster) return;
+        if (!Networking.IsOwner(gameObject)) return;
 
         SetWorldTiles(player);
         SpawnInTiles();
+        _restoreComplete = true;
+    }
+
+    public override void OnPlayerJoined(VRCPlayerApi player)
+    {
+        RequestSerialization();
+    }
+
+    public void ChangeTile(int tileIndex, TileType tileType)
+    {
+        if (!Networking.IsOwner(gameObject)) return;
+        
+        _worldTiles[tileIndex] = (byte)tileType;
+        ChangeTilePrefab(tileIndex, (byte)tileType);
+        SaveTiles();
+        RequestSerialization();
+    }
+
+    public override void OnDeserialization()
+    {
+        for (int i = 0; i < _maxXTiles; i++)
+        {
+            if (_localTiles[i] != _worldTiles[i])
+            {
+                _localTiles[i] = _worldTiles[i];
+                ChangeTilePrefab(i, _worldTiles[i]);
+            }
+        }
+    }
+
+    private void ChangeTilePrefab(int tileIndex, byte tileType)
+    {
+        if (_worldTilesGameObjects[tileIndex] == null)
+        {
+            Debug.Log("Tile not found");
+            return;
+        }
+        
+        Vector3 tilePosition = _worldTilesGameObjects[tileIndex].transform.position;
+        Destroy(_worldTilesGameObjects[tileIndex]);
+        GameObject newTile = GetTile(tileType);
+        _worldTilesGameObjects[tileIndex] = Instantiate(newTile, tilePosition, Quaternion.identity);
     }
 
     private void SetWorldTiles(VRCPlayerApi player)
     {
-        if (!PlayerData.TryGetBytes(player, WorldTilesStringName, out byte[] bytes))
+        if (!PlayerData.TryGetBytes(player, WorldTilesStringName, out _worldTiles))
         {
-            Debug.Log("No playerdata recovered");
-            return;
+            Debug.Log("No playerData recovered");
+            _worldTiles = new byte[_maxTiles];
         }
-        if (bytes.Length < _maxXTiles * _maxZTiles)
-        {
-            Debug.Log($"less bytes received {bytes.Length} than world tiles available {_maxXTiles * _maxZTiles}");
-            return;
-        }
-        
-        for (int i = 0, maxTiles = _maxXTiles * _maxZTiles; i < maxTiles; i++)
-        {
-            _worldTiles[i] = (TileType)bytes[i];
-        }
+        RequestSerialization();
     }
 
     private void Start()
@@ -55,6 +94,7 @@ public class TileManager : UdonSharpBehaviour
         
         _maxXTiles = Mathf.FloorToInt(_worldScaleX / baseTilePrefab.transform.localScale.x);
         _maxZTiles = Mathf.FloorToInt(_worldScaleZ / baseTilePrefab.transform.localScale.z);
+        _maxTiles = _maxXTiles * _maxZTiles;
         
         Debug.Log($"Max tiles: {_maxXTiles}x{_maxZTiles}");
 
@@ -69,9 +109,9 @@ public class TileManager : UdonSharpBehaviour
             worldFloor.transform.localPosition.z + (_worldScaleZ - _tileZSize) / 2;
         
         Debug.Log($"Starting locations at {_startingXLocation}, {_startingZLocation}");
-
-        _worldTiles = new TileType[_maxXTiles * _maxZTiles];
-        Debug.Log($"Max amount of tiles is {_worldTiles.Length}");
+        
+        _localTiles = new byte[_maxTiles];
+        _worldTilesGameObjects = new GameObject[_maxTiles];
 }
 
     private void SpawnInTiles()
@@ -82,19 +122,35 @@ public class TileManager : UdonSharpBehaviour
             for (int z = 0; z < _maxZTiles; z++)
             {
                 Vector3 location = new Vector3(_startingXLocation - x * _tileXSize, 0, _startingZLocation - z * _tileZSize);
-                Debug.Log($"Spawning tile at {location}");
-                GameObject tileToSpawn = GetTile(_worldTiles[(x + 1) * z]);
-                Instantiate(tileToSpawn, location, Quaternion.identity);
+                int index = (x * _maxZTiles) + z;
+                GameObject tileToSpawn = GetTile(_worldTiles[index]);
+                GameObject spawnedTile = Instantiate(tileToSpawn, location, Quaternion.identity);
+                _worldTilesGameObjects[index] = spawnedTile.gameObject;
             }
         }
+    }
+
+    private void SaveTiles()
+    {
+        if (!_restoreComplete) return;
+        
+        PlayerData.SetBytes(WorldTilesStringName, _worldTiles);
+        Debug.Log("Tiles saved");
     }
 
     private GameObject GetTile(TileType tileType)
     {
         switch (tileType)
         {
+            case TileType.GrassyWoodenBench:
+                return grassyWoodenBenchPrefab;
             default:
                 return baseTilePrefab;
         }
+    }
+
+    private GameObject GetTile(byte tile)
+    {
+        return GetTile((TileType)tile);
     }
 }
