@@ -29,7 +29,8 @@ public class PlayerWorkerUnit : UdonSharpBehaviour
     public void SetGatherTarget(Transform target)
     {
         _gatherTarget = target;
-        SetTarget(_gatherTarget);
+        // should player be allowed to discard held resource?
+        SetTarget(_isHoldingResource ? inventoryStorageLocation : target);
     }
     
     // there must be a better way to do this..?
