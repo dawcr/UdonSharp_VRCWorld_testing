@@ -3,7 +3,7 @@ using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
 
-[UdonBehaviourSyncMode(BehaviourSyncMode.None)]
+[UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
 public class Panel : UdonSharpBehaviour
 {
     [SerializeField] private TMP_Text resourcesDescription;
@@ -12,13 +12,14 @@ public class Panel : UdonSharpBehaviour
     [SerializeField] private GatherableResourceData gatherableResourceData;
     [SerializeField] private GameObject resourcesTab;
     [SerializeField] private GameObject shopTab;
+    [SerializeField] private GameObject donationTab;
     
     private PlayerWorkerUnit _playerWorker;
     private bool _showShopTab;
 
     public override void OnOwnershipTransferred(VRCPlayerApi player)
     {
-        UpdateOwnerDescription();
+        UpdateOwnership();
     }
 
     // not sure how to trigger an update when panel is activated so using this for now
@@ -37,17 +38,32 @@ public class Panel : UdonSharpBehaviour
         _playerWorker.SetGatherTarget(gatherableResourceData.GetResourceLocation(GatherableResourceType.Stone));
     }
 
+    public void Donate10Wood()
+    {
+        VRCPlayerApi owner = Networking.GetOwner(gameObject);
+        playerInventory.DonateItems(GatherableResourceType.Wood, 10, owner);
+    }
+
+    public void Donate10Stone()
+    {
+        VRCPlayerApi owner = Networking.GetOwner(gameObject);
+        playerInventory.DonateItems(GatherableResourceType.Stone, 10, owner);
+    }
+
     public void SwitchTab()
     {
         _showShopTab = !_showShopTab;
         UpdateActiveTab();
     }
 
-    private void UpdateOwnerDescription()
+    private void UpdateOwnership()
     {
         VRCPlayerApi owner = Networking.GetOwner(gameObject);
         string local = owner.isLocal ? "(YOU!)" : "";
-        currentOwnerDescription.text = $"Current Owner: {owner.displayName}{local}";
+        VRCPlayerApi inventoryOwner = Networking.GetOwner(playerInventory.gameObject);
+        string inventoryLocal = inventoryOwner.isLocal ? "(YOU!)" : "";
+        currentOwnerDescription.text = $"Current Owner: {owner.displayName}{local} Inventory Owner: {inventoryOwner} Inventory Local: {inventoryLocal}";
+        donationTab.gameObject.SetActive(!owner.isLocal);
     }
 
     private void UpdateActiveTab()
@@ -59,7 +75,7 @@ public class Panel : UdonSharpBehaviour
     private void Start()
     {
         UpdateResourcesDescription();
-        UpdateOwnerDescription();
+        UpdateOwnership();
         GameObject[] playerObjects = Networking.GetPlayerObjects(Networking.LocalPlayer);
         foreach (GameObject playerObject in playerObjects)
         {

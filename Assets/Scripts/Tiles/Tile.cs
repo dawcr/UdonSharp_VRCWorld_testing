@@ -2,7 +2,7 @@
 using UdonSharp;
 using UnityEngine;
 
-[UdonBehaviourSyncMode(BehaviourSyncMode.None)]
+[UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
 public class Tile : UdonSharpBehaviour
 {
     [SerializeField] private TileType tileType;

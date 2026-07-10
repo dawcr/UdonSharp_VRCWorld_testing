@@ -4,7 +4,7 @@ using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
 
-[UdonBehaviourSyncMode(BehaviourSyncMode.None)]
+[UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
 public class Shop : UdonSharpBehaviour
 {
     [SerializeField] private GameObject tileChanger;

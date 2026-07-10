@@ -10,8 +10,10 @@ public class ManualObjectSync : UdonSharpBehaviour
     [UdonSynced] private Vector3 _position;
     [UdonSynced] private Quaternion _rotation;
     private const float SyncInterval = 0.11f;
-    private VRCTweenHandle _tween;
+    private VRCTweenHandle _syncTween;
     private bool _wasKinematic;
+    private VRCTweenHandle _positionTween;
+    private VRCTweenHandle _rotationTween;
     
     public void Sync()
     {
@@ -19,7 +21,7 @@ public class ManualObjectSync : UdonSharpBehaviour
         _position = transform.position;
         _rotation = transform.rotation;
         RequestSerialization();
-        _tween = VRCTween.DelayedCall(this, nameof(Sync), SyncInterval);
+        _syncTween = VRCTween.DelayedCall(this, nameof(Sync), SyncInterval);
     }
 
     public override void OnPickup()
@@ -30,13 +32,22 @@ public class ManualObjectSync : UdonSharpBehaviour
     public override void OnOwnershipTransferred(VRCPlayerApi player)
     {
         SetRemoteKinematic(player);
-        _tween = VRCTween.DelayedCall(this, nameof(Sync), SyncInterval);
+        _syncTween = VRCTween.DelayedCall(this, nameof(Sync), SyncInterval);
     }
 
     public override void OnDeserialization()
     {
-        transform.position = _position;
-        transform.rotation = _rotation;
+        if (_positionTween.IsPlaying)
+        {
+            _positionTween.Kill();
+        }
+        if (_rotationTween.IsPlaying)
+        {
+            _rotationTween.Kill();
+        }
+        
+        _positionTween = gameObject.TweenPosition(_position, SyncInterval, VRCTweenEase.Linear);
+        _rotationTween = gameObject.TweenRotation(_rotation.eulerAngles, SyncInterval, VRCTweenEase.Linear);
     }
 
     private void SetRemoteKinematic(VRCPlayerApi player)
@@ -60,11 +71,11 @@ public class ManualObjectSync : UdonSharpBehaviour
     
     private void OnEnable()
     { 
-        _tween = VRCTween.DelayedCall(this, nameof(Sync), SyncInterval);
+        _syncTween = VRCTween.DelayedCall(this, nameof(Sync), SyncInterval);
     }
 
     private void OnDisable()
     {
-        _tween.Kill();
+        _syncTween.Kill();
     }
 }
