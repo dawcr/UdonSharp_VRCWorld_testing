@@ -1,10 +1,8 @@
-﻿using System;
-using TMPro;
-using UdonSharp;
+﻿using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
 
-[UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
+[UdonBehaviourSyncMode(BehaviourSyncMode.None)]
 public class Shop : UdonSharpBehaviour
 {
     [SerializeField] private TileChanger tileChanger;
@@ -45,6 +43,6 @@ public class Shop : UdonSharpBehaviour
 
     private void RespawnTileChanger(TileType tileType)
     {
-        tileChanger.Init(Networking.GetOwner(gameObject), tileType, transform);
+        tileChanger.Spawn(Networking.GetOwner(gameObject), tileType, transform);
     }
 }

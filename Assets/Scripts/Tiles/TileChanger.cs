@@ -39,29 +39,29 @@ public class TileChanger : UdonSharpBehaviour
         pickup.pickupable = player.isLocal;
     }
 
-    public void Init(VRCPlayerApi currentMasterPlayer, TileType targetTile, Transform location)
+    public void Spawn(VRCPlayerApi currentMasterPlayer, TileType targetTile, Transform location)
     {
         Networking.SetOwner(currentMasterPlayer, gameObject);
         Debug.Log($"Setting target tile {targetTile}");
         TargetTile = targetTile;
+        transform.position = location.position;
+        SetInactive();
+    }
+
+    private void SetInactive()
+    {
         _active = false;
         UpdateActiveState();
-        transform.position = location.position;
+        rb.velocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
     }
 
     [NetworkCallable]
     public void Respawn()
     {
-        _active = false;
-        UpdateActiveState();
         pickup.Drop();
         transform.position = _startingPosition;
-        if (rb == null) // am I missing something? why is this needed
-        {
-            rb = GetComponent<Rigidbody>();
-        }
-        rb.velocity = Vector3.zero;
-        rb.angularVelocity = Vector3.zero;
+        SetInactive();
     }
 
     private void Awake()

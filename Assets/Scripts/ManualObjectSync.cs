@@ -9,9 +9,9 @@ public class ManualObjectSync : UdonSharpBehaviour
     [SerializeField] private Rigidbody rb;
     [UdonSynced] private Vector3 _position;
     [UdonSynced] private Quaternion _rotation;
-    private const float SyncInterval = 0.12f;
-    private VRCTweenHandle _syncTween;
     private bool _wasKinematic;
+    private const float SyncInterval = 0.11f;
+    private VRCTweenHandle _syncTween;
     private VRCTweenHandle _positionTween;
     private VRCTweenHandle _rotationTween;
     
@@ -19,9 +19,12 @@ public class ManualObjectSync : UdonSharpBehaviour
     {
         if (!Networking.IsOwner(gameObject)) return;
         
-        _position = transform.position;
-        _rotation = transform.rotation;
-        RequestSerialization();
+        if (!transform.position.Equals(_position) || !transform.rotation.Equals(_rotation))
+        {
+            _position = transform.position;
+            _rotation = transform.rotation;
+            RequestSerialization();
+        }
         
         StartSynchronization();
     }
@@ -48,20 +51,13 @@ public class ManualObjectSync : UdonSharpBehaviour
             _rotationTween.Kill();
         }
         
-        if (transform.position != _position)
-        {
-            _positionTween = gameObject.TweenPosition(_position, SyncInterval, VRCTweenEase.None);
-        }
-        
-        if (transform.rotation != _rotation)
-        {
-            _rotationTween = gameObject.TweenRotation(_rotation.eulerAngles, SyncInterval, VRCTweenEase.None);
-        }
+        _positionTween = gameObject.TweenPosition(_position, SyncInterval, VRCTweenEase.None);
+        _rotationTween = gameObject.TweenRotation(_rotation.eulerAngles, SyncInterval, VRCTweenEase.None);
     }
     
     private void StartSynchronization()
     {
-        if (_syncTween.IsPlaying)
+        if (_syncTween.IsActive)
         {
             _syncTween.Kill();
         }

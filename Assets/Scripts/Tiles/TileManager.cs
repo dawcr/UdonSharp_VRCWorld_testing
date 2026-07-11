@@ -10,6 +10,8 @@ public class TileManager : UdonSharpBehaviour
     [SerializeField] private GameObject worldFloor;
     [SerializeField] private GameObject baseTilePrefab;
     [SerializeField] private GameObject grassyWoodenBenchPrefab;
+    [SerializeField] private float tileXSize;
+    [SerializeField] private float tileZSize;
 
     [UdonSynced] private byte[] _worldTilesType;
     private Tile[] _worldTilesObject;
@@ -17,8 +19,6 @@ public class TileManager : UdonSharpBehaviour
     private int _maxXTiles;
     private int _maxZTiles;
     private int _maxTiles;
-    private float _tileXSize;
-    private float _tileZSize;
     private float _startingXLocation;
     private float _startingZLocation;
     // is this necessary here?
@@ -94,7 +94,7 @@ public class TileManager : UdonSharpBehaviour
         {
             for (int z = 0; z < _maxZTiles; z++)
             {
-                Vector3 location = new Vector3(_startingXLocation - x * _tileXSize, 0, _startingZLocation - z * _tileZSize);
+                Vector3 location = new Vector3(_startingXLocation - x * tileXSize, 0, _startingZLocation - z * tileZSize);
                 int index = (x * _maxZTiles) + z;
                 GameObject tileToSpawn = GetTile(_worldTilesType[index]);
                 GameObject spawnedTile = Instantiate(tileToSpawn, location, Quaternion.identity);
@@ -138,21 +138,16 @@ public class TileManager : UdonSharpBehaviour
         // whyy
         float worldScaleZ = worldFloor.transform.localScale.y;
         
-        _maxXTiles = Mathf.FloorToInt(worldScaleX / baseTilePrefab.transform.localScale.x);
-        _maxZTiles = Mathf.FloorToInt(worldScaleZ / baseTilePrefab.transform.localScale.z);
+        _maxXTiles = Mathf.FloorToInt(worldScaleX / tileXSize);
+        _maxZTiles = Mathf.FloorToInt(worldScaleZ / tileZSize);
         _maxTiles = _maxXTiles * _maxZTiles;
         
         //Debug.Log($"Max tiles: {_maxXTiles}x{_maxZTiles}");
 
-        _tileXSize = baseTilePrefab.transform.localScale.x;
-        _tileZSize = baseTilePrefab.transform.localScale.z;
-        
-        //Debug.Log($"Tile size: {_tileXSize}x{_tileZSize}");
-
         _startingXLocation =
-            worldFloor.transform.localPosition.x + (worldScaleX - _tileXSize) / 2;
+            worldFloor.transform.localPosition.x + (worldScaleX - tileXSize) / 2;
         _startingZLocation =
-            worldFloor.transform.localPosition.z + (worldScaleZ - _tileZSize) / 2;
+            worldFloor.transform.localPosition.z + (worldScaleZ - tileZSize) / 2;
         
         //Debug.Log($"Starting locations at {_startingXLocation}, {_startingZLocation}");
         

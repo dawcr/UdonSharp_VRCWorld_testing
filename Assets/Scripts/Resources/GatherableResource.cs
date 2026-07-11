@@ -2,7 +2,7 @@
 using UnityEngine;
 using VRC.SDKBase;
 
-[UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
+[UdonBehaviourSyncMode(BehaviourSyncMode.None)]
 public class GatherableResource : UdonSharpBehaviour
 {
     [SerializeField] private GatherableResourceType gatherableResourceType;

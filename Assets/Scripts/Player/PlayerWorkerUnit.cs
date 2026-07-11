@@ -31,6 +31,11 @@ public class PlayerWorkerUnit : UdonSharpBehaviour
     public void ReceiveResource(GatherableResourceType resource, float gatherTime)
     {
         if (!Networking.IsOwner(gameObject)) return;
+
+        if (_gatherOperation.IsActive)
+        {
+            _gatherOperation.Kill();
+        }
         
         float finalGatherTime = gatherTime * gatherTimeMultiplier;
         _gatheredResource = resource;

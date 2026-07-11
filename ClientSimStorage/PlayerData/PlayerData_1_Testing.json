@@ -1,18 +1,18 @@
 {
   "Wood": {
-    "LastUpdated": "2026-07-11T03:12:22.1938664+02:00",
+    "LastUpdated": "2026-07-11T19:26:51.9534592+02:00",
     "Key": "Wood",
     "Value": {
       "type": "Int",
-      "value": 9
+      "value": 6
     }
   },
   "Stone": {
-    "LastUpdated": "2026-07-11T03:12:22.1938664+02:00",
+    "LastUpdated": "2026-07-11T19:26:51.9549834+02:00",
     "Key": "Stone",
     "Value": {
       "type": "Int",
-      "value": 12
+      "value": 9
     }
   },
   "TotalExperience": {

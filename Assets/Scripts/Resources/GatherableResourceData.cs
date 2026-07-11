@@ -1,7 +1,7 @@
 ﻿using UdonSharp;
 using UnityEngine;
 
-[UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
+[UdonBehaviourSyncMode(BehaviourSyncMode.None)]
 public class GatherableResourceData : UdonSharpBehaviour
 {
     [SerializeField] private Transform defaultLocation;

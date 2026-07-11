@@ -536,6 +536,8 @@ MonoBehaviour:
     type: 3}
   grassyWoodenBenchPrefab: {fileID: 1108657875577385112, guid: bd579b8f74cda0f438531755e1057ea5,
     type: 3}
+  tileXSize: 5
+  tileZSize: 5
 --- !u!4 &299310442
 Transform:
   m_ObjectHideFlags: 0
@@ -1275,7 +1277,7 @@ MonoBehaviour:
   SynchronizePosition: 0
   AllowCollisionOwnershipTransfer: 0
   Reliable: 0
-  _syncMethod: 3
+  _syncMethod: 1
   serializedProgramAsset: {fileID: 11400000, guid: 824a77cc1351a7040a0b9dfa46b94f3e,
     type: 2}
   programSource: {fileID: 11400000, guid: 743e009562d835e41bbdfff18d3fc0ca, type: 2}
@@ -1654,7 +1656,7 @@ MonoBehaviour:
   SynchronizePosition: 0
   AllowCollisionOwnershipTransfer: 0
   Reliable: 0
-  _syncMethod: 3
+  _syncMethod: 1
   serializedProgramAsset: {fileID: 11400000, guid: 824a77cc1351a7040a0b9dfa46b94f3e,
     type: 2}
   programSource: {fileID: 11400000, guid: 743e009562d835e41bbdfff18d3fc0ca, type: 2}
@@ -2339,6 +2341,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1016225591024498546, guid: 2e833411bb8e945409b55704f4b6c28f,
+        type: 3}
+      propertyPath: m_Interpolate
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1094117294900135194, guid: 2e833411bb8e945409b55704f4b6c28f,
         type: 3}
       propertyPath: m_Name
@@ -2466,7 +2473,7 @@ MonoBehaviour:
   SynchronizePosition: 0
   AllowCollisionOwnershipTransfer: 0
   Reliable: 0
-  _syncMethod: 3
+  _syncMethod: 1
   serializedProgramAsset: {fileID: 11400000, guid: b5f571d25056919408e67721fbb8d585,
     type: 2}
   programSource: {fileID: 11400000, guid: d71850dab4964724d8490983084366a9, type: 2}
@@ -3270,6 +3277,11 @@ PrefabInstance:
       propertyPath: m_PresetInfoIsWorld
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1206605615208723406, guid: 5b99858628901b34db4f466380c9dfc1,
+        type: 3}
+      propertyPath: _syncMethod
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5678860152218700340, guid: 5b99858628901b34db4f466380c9dfc1,
         type: 3}
       propertyPath: playerInventory
@@ -3301,6 +3313,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Canvas
+      objectReference: {fileID: 0}
+    - target: {fileID: 7571328249888468828, guid: 5b99858628901b34db4f466380c9dfc1,
+        type: 3}
+      propertyPath: _syncMethod
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7936337976848886713, guid: 5b99858628901b34db4f466380c9dfc1,
         type: 3}
@@ -3448,13 +3465,13 @@ MonoBehaviour:
   useAssignedLayers: 0
   DynamicPrefabs: []
   DynamicMaterials:
+  - {fileID: 2100000, guid: ae78e3502dcf2d7469bd93120b86f12c, type: 2}
   - {fileID: 2100000, guid: 2608c9140e5b81843aa967c2cd12a2a9, type: 2}
   - {fileID: 2100000, guid: 5598a53554c28954d8689549c0db2289, type: 2}
-  - {fileID: 2100000, guid: ae78e3502dcf2d7469bd93120b86f12c, type: 2}
   - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
   - {fileID: 2100000, guid: 9f6181d21c34e5047bc26aa3bfe8a6f2, type: 2}
-  - {fileID: 2100000, guid: dc4fa4a233f3b0d4eb9ed6854866a44c, type: 2}
   - {fileID: 2100000, guid: d73f30518ca49f444852eb6d42d774a0, type: 2}
+  - {fileID: 2100000, guid: dc4fa4a233f3b0d4eb9ed6854866a44c, type: 2}
   LightMapsNear: []
   LightMapsFar: []
   LightMode: 0
